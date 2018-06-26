@@ -5,9 +5,60 @@
  */
 package com.yuanxin.app.app.controller.client;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
+
+import com.yuanxin.app.app.appobject.ApnsTokenAO;
+import com.yuanxin.app.app.appobject.AppUserAO;
+import com.yuanxin.app.app.appobject.AppUserAllowAO;
+import com.yuanxin.app.app.appobject.ApplicationAO;
+import com.yuanxin.app.app.appobject.ClientAO;
+import com.yuanxin.app.app.appobject.ClientLogAO;
+import com.yuanxin.app.app.appobject.ClientPluginVersionAO;
+import com.yuanxin.app.app.appobject.ClientVersionAO;
+import com.yuanxin.app.app.appobject.OperationAO;
+import com.yuanxin.app.app.appobject.OrgAO;
+import com.yuanxin.app.app.appobject.OrgUserAO;
+import com.yuanxin.app.app.appobject.SkinAO;
+import com.yuanxin.app.app.appobject.TenantAO;
+import com.yuanxin.app.app.appobject.UserAO;
+import com.yuanxin.app.app.appobject.UserUserAO;
+import com.yuanxin.app.app.appobject.WizConfigAO;
 import com.yuanxin.app.app.dto.model.Member;
 import com.yuanxin.app.app.dto.model.Msg;
-
 import com.yuanxin.app.app.dto.model.ObjectContentApp102.Operation;
 import com.yuanxin.app.app.dto.request.AddApnsTokenRequest;
 import com.yuanxin.app.app.dto.request.AddOrRemoveContactRequest;
@@ -26,6 +77,7 @@ import com.yuanxin.app.app.dto.request.GetOrgInfoRequest;
 import com.yuanxin.app.app.dto.request.GetOrgUserListRequest;
 import com.yuanxin.app.app.dto.request.LoginRequest;
 import com.yuanxin.app.app.dto.request.MultiBindRequest;
+import com.yuanxin.app.app.dto.request.OffLineTextRequest;
 import com.yuanxin.app.app.dto.request.SaveAppUserAllowRequest;
 import com.yuanxin.app.app.dto.request.SearchRequest;
 import com.yuanxin.app.app.dto.request.SetUserAvatarRequest;
@@ -44,6 +96,7 @@ import com.yuanxin.app.app.dto.response.GetMemberResponse;
 import com.yuanxin.app.app.dto.response.GetOrgInfoResponse;
 import com.yuanxin.app.app.dto.response.GetOrgUserListResponse;
 import com.yuanxin.app.app.dto.response.LoginResponse;
+import com.yuanxin.app.app.dto.response.OfflineResponse;
 import com.yuanxin.app.app.dto.response.OrgUserAppResponse;
 import com.yuanxin.app.app.dto.response.Response;
 import com.yuanxin.app.app.dto.response.ResponseUpload;
@@ -90,23 +143,6 @@ import com.yuanxin.app.app.util.MD5Util;
 import com.yuanxin.app.app.util.SerializeUtil;
 import com.yuanxin.app.app.wsdl.util.FontImageUtil;
 import com.yuanxin.app.app.wsdl.util.StringUtil;
-import com.hp.hpl.sparta.xpath.ThisNodeTest;
-import com.yuanxin.app.app.appobject.ApnsTokenAO;
-import com.yuanxin.app.app.appobject.AppUserAO;
-import com.yuanxin.app.app.appobject.AppUserAllowAO;
-import com.yuanxin.app.app.appobject.ApplicationAO;
-import com.yuanxin.app.app.appobject.ClientAO;
-import com.yuanxin.app.app.appobject.ClientLogAO;
-import com.yuanxin.app.app.appobject.ClientPluginVersionAO;
-import com.yuanxin.app.app.appobject.ClientVersionAO;
-import com.yuanxin.app.app.appobject.OperationAO;
-import com.yuanxin.app.app.appobject.OrgAO;
-import com.yuanxin.app.app.appobject.OrgUserAO;
-import com.yuanxin.app.app.appobject.SkinAO;
-import com.yuanxin.app.app.appobject.TenantAO;
-import com.yuanxin.app.app.appobject.UserAO;
-import com.yuanxin.app.app.appobject.UserUserAO;
-import com.yuanxin.app.app.appobject.WizConfigAO;
 import com.yuanxin.framework.logging.Logger;
 import com.yuanxin.framework.logging.LoggerFactory;
 import com.yuanxin.framework.mybatis.Page;
@@ -114,49 +150,10 @@ import com.yuanxin.framework.service.ServiceResult;
 
 import net.weedfs.client.AssignParams;
 import net.weedfs.client.Assignation;
-import net.weedfs.client.Location;
 import net.weedfs.client.ReplicationStrategy;
 import net.weedfs.client.WeedFSClient;
 import net.weedfs.client.WeedFSClientBuilder;
 import net.weedfs.client.net.WriteResult;
-import redis.clients.jedis.Jedis;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 
 
 /**
@@ -248,6 +245,15 @@ public class DeviceController {
 	private String OPEN_CLOSE_SKIN_KEY="open_close_skin_key";
 	private String OPEN_CLOSE_KEY="open_close_key_";
 	private String WZTK_LOGIN_TIMES="WZTK_LOGIN_TIMES_";
+	private String WZTK_puer_offline_data="WZTK_puer_offline_data";
+	private String WZTK_puer_offline_data1="WZTK_puer_offline_data1";
+	private String WZTK_puer_offline_objIdList="WZTK_puer_offline_objIdList";
+	private String WZTK_puer_offline_data4="WZTK_puer_offline_data4";
+	private String WZTK_puer_offline_data5="WZTK_puer_offline_data5";
+	private String WZTK_puer_offline_data6="WZTK_puer_offline_data6";
+	private String WZTK_puer_offline_data7="WZTK_puer_offline_data7";
+	private String WZTK_puer_offline_data8="WZTK_puer_offline_data8";
+	
 	
 
 	public class SUFFIX {
@@ -2735,5 +2741,196 @@ public class DeviceController {
         }
         return result;
     }
+	
+	@RequestMapping(value = "/getOfflineText", method = { RequestMethod.POST })
+	@ResponseBody
+	public Object getOfflineText(@RequestBody OffLineTextRequest req, Model model, HttpServletRequest request) throws Exception {
+		 LOG.info("进入getOfflineText接口，有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
+				 request.getHeader("user-agent"));
+		 		OfflineResponse resp = new OfflineResponse();
+				BaseResponse baseResponse = new BaseResponse();
+				String urlPost=req.getUrlPost();
+				String urlGet1=req.getUrlGet1();
+				String urlGet2=req.getUrlGet2();
+				String urlGet3=req.getUrlGet3();
+				String urlGet4=req.getUrlGet4();
+				String urlGet5=req.getUrlGet5();
+				
+				String objId_1 = req.getObjId();
+				
+				String resultGet1="";
+				String resultGet2="";
+				String resultGet3="";
+				String resultGet4="";
+				String resultGet5="";
+				String objidList="";
+				 LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
+				if (!"00000000==".equals(redisUtilService.get(WZTK_puer_offline_data))) {
+				
+				String result1=HttpClientUtil.httpPost(urlPost, ReserverJsonUtil.getJsonObject1(objId_1), 10000, 10000);
+				
+				Map< String, String> map1 = new HashMap<>();
+				map1=ReserverJsonUtil.readJsonGetResult(result1);
+				String result=map1.get("Result");
+				String realData1=map1.get("RealData");
+				String allAssociationObjects = "";
+				allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
+		/*		allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
+				if ("0".equals(result)) {
+					redisUtilService.set(WZTK_puer_offline_data1, realData1);
+					if (redisUtilService.exists(objId_1)) {
+						
+						objidList=redisUtilService.get(objId_1);
+						 LOG.info("objidList = :"+ objidList.length());
+					}else {
+						 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
+						 LOG.info("objidList = :"+ objidList.length());
+						 if (!objidList.isEmpty()) {
+							 redisUtilService.set(objId_1, objidList);
+							 redisUtilService.expire(objId_1, 88864);
+						}
+						
+					}
+					
+				}*/
+				 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
+				 LOG.info("result2==objidList = :"+ objidList.length());
+				String result2 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getPropertiesByObjIds(objidList), 10000, 10000);
+				Map< String, String> map2 = new HashMap<>();
+				map2=ReserverJsonUtil.readJsonGetResult(result2);
+				String result_2=map2.get("Result");
+				String realData2=map2.get("RealData");
+				
+				
+				String reuslt3 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getObjRelativeFiles(objidList), 10000, 10000);	
+				Map< String, String> map3 = new HashMap<>();
+				map3=ReserverJsonUtil.readJsonGetResult(reuslt3);
+				String result_3=map3.get("Result");
+				String realData3=map3.get("RealData");
+				
+			
+				 resultGet1=HttpClientUtil.sendGet(urlGet1);
+				 resultGet2=HttpClientUtil.sendGet(urlGet2);
+				 resultGet3=HttpClientUtil.sendGet(urlGet3);
+				 resultGet4=HttpClientUtil.sendGet(urlGet4);
+				 resultGet5=HttpClientUtil.sendGet(urlGet5);
+				
+				if (resultGet1.contains("ObjId")) {
+					redisUtilService.set(WZTK_puer_offline_data4, resultGet1);
+					result=result+"0";
+				}
+				if (resultGet2.contains("ObjId")) {
+					redisUtilService.set(WZTK_puer_offline_data5, resultGet2);
+					result=result+"0";
+				}
+				if (resultGet3.contains("ObjId")) {
+					redisUtilService.set(WZTK_puer_offline_data6, resultGet3);
+					result=result+"0";
+				}
+				if (resultGet4.contains("ObjId")) {
+					redisUtilService.set(WZTK_puer_offline_data7, resultGet4);
+					result=result+"0";
+				}
+				if (resultGet5.contains("ObjId")) {
+					redisUtilService.set(WZTK_puer_offline_data8, resultGet5);
+					result=result+"0";
+				}
+				
+				resp.getAllAssociationObjectsResult1=allAssociationObjects;
+				resp.getPropertiesByObjIdsResult2=realData2;
+				resp.getObjRelativeFilesResult3=realData3;
+			 	resp.getReult4=resultGet1;
+				resp.getReult5=resultGet2;
+				resp.getReult6=resultGet3;
+				resp.getReult7=resultGet4;
+				resp.getReult8=resultGet5;
+				
+				if ("00000000".equalsIgnoreCase(result_2+result_3+result)) {
+					redisUtilService.set(WZTK_puer_offline_data, "00000000");
+					LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
+					redisUtilService.expire(WZTK_puer_offline_data, 88864);
+					baseResponse.setRet(BaseResponse.RET_SUCCESS);
+					resp.setBaseResponse(baseResponse);
+					return resp;
+				}else {
+					redisUtilService.set(WZTK_puer_offline_data, result_2+result_3+result);
+					LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
+					baseResponse.setErrMsg("数据写入失败");
+					baseResponse.setRet(BaseResponse.RET_ERROR);
+					resp.setBaseResponse(baseResponse);
+					return resp;
+				}
+				
+				
+				}else {
+					String realData1=redisUtilService.get(WZTK_puer_offline_data1);
+					String allAssociationObjects = "";
+					allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
+				/*	if (redisUtilService.exists(objId_1)) {
+						 LOG.info("1111 = :"+ objidList.length());
+						objidList=redisUtilService.get(objId_1);
+						 LOG.info("2222 = :"+ objidList.length());
+					}else {
+						 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
+						 LOG.info("3333 = :"+ objidList.length());
+						 if (!objidList.isEmpty()) {
+							 redisUtilService.set(objId_1, objidList);
+							 redisUtilService.expire(objId_1, 88864);
+						}
+						
+					}*/
+					 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
+					 LOG.info("objidList size= :"+ objidList.length());
+					String result2 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getPropertiesByObjIds(objidList), 30000, 30000);
+					Map< String, String> map2 = new HashMap<>();
+					map2=ReserverJsonUtil.readJsonGetResult(result2);
+					String result_2=map2.get("Result");
+					String realData2=map2.get("RealData");
+					
+					
+					String reuslt3 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getObjRelativeFiles(objidList), 30000, 30000);	
+					Map< String, String> map3 = new HashMap<>();
+					map3=ReserverJsonUtil.readJsonGetResult(reuslt3);
+					String result_3=map3.get("Result");
+					String realData3=map3.get("RealData");
+					resultGet1=redisUtilService.get(WZTK_puer_offline_data4);
+					resultGet2=redisUtilService.get(WZTK_puer_offline_data5);
+					resultGet3=redisUtilService.get(WZTK_puer_offline_data6);
+					resultGet4=redisUtilService.get(WZTK_puer_offline_data7);
+					resultGet5=redisUtilService.get(WZTK_puer_offline_data8);
+					
+						resp.getAllAssociationObjectsResult1=allAssociationObjects;
+						resp.getPropertiesByObjIdsResult2=realData2;
+						resp.getObjRelativeFilesResult3=realData3;
+					 	resp.getReult4=resultGet1;
+						resp.getReult5=resultGet2;
+						resp.getReult6=resultGet3;
+						resp.getReult7=resultGet4;
+						resp.getReult8=resultGet5;
+						
+						if ("00".equalsIgnoreCase(result_2+result_3)) {
+							baseResponse.setRet(BaseResponse.RET_SUCCESS);
+							resp.setBaseResponse(baseResponse);
+							return resp;
+						}else {
+							redisUtilService.set(WZTK_puer_offline_data, result_2+result_3);
+							LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
+							baseResponse.setErrMsg("数据写入失败");
+							baseResponse.setRet(BaseResponse.RET_ERROR);
+							resp.setBaseResponse(baseResponse);
+							return resp;
+						}
+						
+				}
+				
+	
+				
+				
+	}
+	
+	
+	
+	
+	
 }
 
