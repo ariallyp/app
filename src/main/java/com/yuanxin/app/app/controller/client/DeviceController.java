@@ -1,8 +1,3 @@
-/*
- * Copyright (c) 2012, Yunnan Yuan Xin technology Co., Ltd.
- *
- * All rights reserved.
- */
 package com.yuanxin.app.app.controller.client;
 
 import java.io.ByteArrayInputStream;
@@ -246,13 +241,8 @@ public class DeviceController {
 	private String OPEN_CLOSE_KEY="open_close_key_";
 	private String WZTK_LOGIN_TIMES="WZTK_LOGIN_TIMES_";
 	private String WZTK_puer_offline_data="WZTK_puer_offline_data";
-	private String WZTK_puer_offline_data1="WZTK_puer_offline_data1";
-	private String WZTK_puer_offline_objIdList="WZTK_puer_offline_objIdList";
-	private String WZTK_puer_offline_data4="WZTK_puer_offline_data4";
-	private String WZTK_puer_offline_data5="WZTK_puer_offline_data5";
-	private String WZTK_puer_offline_data6="WZTK_puer_offline_data6";
-	private String WZTK_puer_offline_data7="WZTK_puer_offline_data7";
-	private String WZTK_puer_offline_data8="WZTK_puer_offline_data8";
+	private String WZTK_puer_offline_get_data="WZTK_puer_offline_get_data";
+	
 	
 	
 
@@ -670,9 +660,7 @@ public class DeviceController {
 					return resp;
 
 				} else if (retint == 1 || retint == 0) {
-					if (retint == 0) {
-						Boolean result = saveClientBindStatus(deviceId, deviceType, deviceName, u.getUid(), "1");
-					}
+					
 					member = userToMember(u);
 					member.setOrgName(orgName);
 					resp.setMember(member);
@@ -739,8 +727,6 @@ public class DeviceController {
 	public Object getBindDevices(@RequestBody BindRequest req, Model model, HttpServletRequest request) {
 
 		String username = req.getUserName();
-		String deviceId = req.getBaseRequest().getDeviceID();
-		String deviceType = req.getBaseRequest().getDeviceType();
 		String bindStatus = req.getBindStatus();
 		String deviceName = req.getBaseRequest().getDeviceName();
 		deviceName = deviceName == null ? "" : deviceName;
@@ -774,7 +760,6 @@ public class DeviceController {
 		if (ret.isSucceed() && !CollectionUtils.isEmpty(ret.getData())) {
 			for (ClientAO client : ret.getData()) {
 				client.setBindstatus(bindStatus);
-				ServiceResult<Boolean> result = clientService.update(client);
 			}
 		}
 		baseResponse.setRet(BaseResponse.RET_SUCCESS);
@@ -793,7 +778,6 @@ public class DeviceController {
 	@RequestMapping(value = "/bindDevice", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object bindDevice(@RequestBody BindRequest req, Model model, HttpServletRequest request) {
-		String customerId = req.getBaseRequest().getCustomer_id();
 		String username = req.getUserName();
 		String deviceId = req.getBaseRequest().getDeviceID();
 		String deviceType = req.getBaseRequest().getDeviceType();
@@ -1180,9 +1164,8 @@ public class DeviceController {
 		GetMemberResponse resp = new GetMemberResponse();
 		BaseResponse baseResponse = new BaseResponse();
 		String token = req.getBaseRequest().getToken();
-		String customerId = req.getBaseRequest().getCustomer_id();
 		ServiceResult<Member> excittoken = getUserByToken(token);
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1267,7 +1250,6 @@ public class DeviceController {
 	public Object getAppOrgUserList(@PathVariable("tenantid") String tenantid, HttpServletRequest request) {
 
 		List<OrgUserAppResponse> resList = new ArrayList<OrgUserAppResponse>();
-		Member ognizationMemberList = new Member();
 
 		ServiceResult<TenantAO> tenantRet = tenantService.getById(tenantid);
 		if (tenantRet.isSucceed() && null != tenantRet.getData()) {
@@ -1278,7 +1260,6 @@ public class DeviceController {
 			OrgUserApp.setType("org");
 			OrgUserApp.setpId("0");
 			resList.add(OrgUserApp);
-			List<Member> menberlist = new ArrayList<Member>();
 			OrgCriteria example = new OrgCriteria();
 			example.createCriteria().andTenantIdEqualTo(tenantid);
 			ServiceResult<List<OrgAO>> praentList = orgService.selectByCriteria(example);
@@ -1352,11 +1333,10 @@ public class DeviceController {
 		GetOrgInfoResponse resp = new GetOrgInfoResponse();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1515,12 +1495,11 @@ public class DeviceController {
 		BaseResponse baseResponse = new BaseResponse();
 		List<Member> memberList = new ArrayList<Member>();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
 		String token = req.getBaseRequest().getToken();
 		String orgId = req.getOrgid();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1574,7 +1553,7 @@ public class DeviceController {
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1593,7 +1572,6 @@ public class DeviceController {
 			resp.setBaseResponse(baseResponse);
 			return resp;
 		}
-		CheckUpdateResponse cr = new CheckUpdateResponse();
 		String content = retao.getVerDescription();
 
 		Msg msg = new Msg();
@@ -1633,7 +1611,7 @@ public class DeviceController {
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1679,7 +1657,6 @@ public class DeviceController {
 			resp.setBaseResponse(baseResponse);
 			return resp;
 		}
-		CheckPlugUpdateResponse cr = new CheckPlugUpdateResponse();
 		String content = retao.getVerDescription();
 		if (appuserallow.getType().equals("1")) {
 			retao.setDownloadUrl(rejectInternatUrl);
@@ -1724,11 +1701,10 @@ public class DeviceController {
 		SearchResponse resp = new SearchResponse();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1774,11 +1750,10 @@ public class DeviceController {
 		ChangeUserInfoResponse resp = new ChangeUserInfoResponse();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1848,12 +1823,11 @@ public class DeviceController {
 		Response resp = new Response();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
 		String deviceId = req.getBaseRequest().getDeviceID();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1885,18 +1859,14 @@ public class DeviceController {
 	@RequestMapping(value = "/delApnsToken", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object delApnsToken(@RequestBody DelApnsTokenRequest req, Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
+		
 		Response resp = new Response();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
-		String deviceId = req.getBaseRequest().getDeviceID();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -1922,12 +1892,6 @@ public class DeviceController {
 	@RequestMapping(value = "/setSessionState", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object setSessionState(Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
-		Response resp = new Response();
-		BaseResponse baseResponse = new BaseResponse();
-
 		return null;
 	}
 
@@ -1997,8 +1961,6 @@ public class DeviceController {
 
 		AppUserAllowCriteria deleteallowCriteria = new AppUserAllowCriteria();
 		deleteallowCriteria.createCriteria().andUidIn(userlist);
-		ServiceResult<Boolean> retde = appUserAllowService.deleteByCriteria(deleteallowCriteria);
-		// if (retde.isSucceed()) {
 		for (AppUserAllowAO allow : req.AppUserAllowAOList) {
 			AppUserAllowCriteria allowCriteria = new AppUserAllowCriteria();
 			allowCriteria.createCriteria().andAppidEqualTo(allow.getAppid()).andUidEqualTo(allow.getUid());
@@ -2008,14 +1970,10 @@ public class DeviceController {
 				allow.setId(appuserallowListRet.getData().get(0).getId());
 				ServiceResult<Boolean> ret = appUserAllowService.saveOrUpdate(allow);
 				ret.getMsg();
-			} else {
-				int num = appUserAllowService.InsertAppUserAllowAO(allow);
 			}
-			// int num = appUserAllowService.InsertAppUserAllowAO(allow);
+			
 		}
-		// }else{
-		// return -1;
-		// }
+		
 		return 0;
 	}
 
@@ -2054,7 +2012,7 @@ public class DeviceController {
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -2088,7 +2046,6 @@ public class DeviceController {
 			}
 		}
 
-		List<String> values = new ArrayList<String>();
 		AppUserCriteria appUserCriteria = new AppUserCriteria();
 		// 用户关注的应用
 		appUserCriteria.createCriteria().andUidEqualTo(excittoken.getData().getUid()).andFollowEqualTo("1");
@@ -2125,12 +2082,10 @@ public class DeviceController {
 		BaseResponse baseResponse = new BaseResponse();
 		List<Member> members = new ArrayList<Member>();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
-		String deviceId = req.getBaseRequest().getDeviceID();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if ( excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed() ) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -2194,12 +2149,10 @@ public class DeviceController {
 		GetAppOperationListResponse resp = new GetAppOperationListResponse();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
-		String deviceId = req.getBaseRequest().getDeviceID();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -2266,12 +2219,10 @@ public class DeviceController {
 		Response resp = new Response();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
-		String deviceId = req.getBaseRequest().getDeviceID();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -2322,92 +2273,18 @@ public class DeviceController {
 		resp.setBaseResponse(baseResponse);
 		return resp;
 
-		// if (saveaua.getData().booleanValue()) {
-		//
-		// baseResponse.setErrMsg("followApp success");
-		// baseResponse.setRet(BaseResponse.RET_SUCCESS);
-		// resp.setBaseResponse(baseResponse);
-		// return resp;
-
-		// PushRequest pushre = new PushRequest();
-		//
-		// Msg msg = new Msg();
-
-		// ServiceResult<ApplicationAO> application = applicationService
-		// .getById(appid);
-		// if (application != null) {
-		// msg.msgType = 103;
-		// msg.content = "感谢你关注了" + application.getData().getName();
-		// msg.toUserName = excittoken.getData().getUid()
-		// + SUFFIX.USER_SUFFIX;
-		// msg.setObjectContent("appId:" + appid + " ,content:非常感谢你关注了"
-		// + application.getData().getName());
-		// msg.expire = (long) 3600;
-		// String Token = application.getData().getToken();
-		// BaseRequest baseRequest = new BaseRequest();
-		// baseRequest.token = Token;
-		// pushre.setBaseRequest(baseRequest);
-		//
-		// pushre.msg = msg;
-		//
-		// try {
-		// InputStream in = new BufferedInputStream(
-		// new FileInputStream(
-		// "src/main/resources/env.properties"));
-		// Properties p = new Properties();
-		// p.load(in);
-		// String push = p.getProperty("push");
-		// String addr = "http://" + push
-		// + "/app/client/app/user/push";
-		// Map mp = new LinkedHashMap();
-		// mp.put("baseRequest", "{token:" + Token + "}");
-		// mp.put("Msg", msg);
-		// byte[] respond = HttpUtil.doPost(addr, mp);
-		// if (respond == null) {
-		//
-		// return null;
-		//
-		// }
-		// ObjectMapper obj = new ObjectMapper();
-		// ServiceResult<LinkedHashMap> r = null;
-		// try {
-		// r = obj.readValue(respond, 0, respond.length,
-		// ServiceResult.class);
-		// if (!r.isSucceed()) {
-		// return null;
-		//
-		// }
-		// baseResponse.setErrMsg("Save app user success");
-		// baseResponse.setRet(BaseResponse.RET_SUCCESS);
-		// resp.setBaseResponse(baseResponse);
-		// return resp;
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// } catch (Exception e) {
-		// // TODO: handle exception
-		// }
-		//
-		// return pushre;
-		// }
-		// } else {
-		// return null;
-		// }
+		
 	}
 
 	@RequestMapping(value = "/unFollowApp", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object unFollowApp(@RequestBody UnFollowAppRequest req, Model model, HttpServletRequest request) {
-		// LOG.info("SessionId %s", request.getSession().getId());
 		Response resp = new Response();
 		BaseResponse baseResponse = new BaseResponse();
-
-		String customerId = req.getBaseRequest().getCustomer_id();
-		String deviceId = req.getBaseRequest().getDeviceID();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -2444,84 +2321,9 @@ public class DeviceController {
 			resp.setBaseResponse(baseResponse);
 			return resp;
 		}
-		// String appId = appname.substring(0, appname.indexOf("@"));
-		// AppUserAO aua = new AppUserAO();
-		// // aua.setId(appId);
-		// aua.setUid(req.getBaseRequest().getUid());
-		// aua.setFollow("0");
-		// aua.setAppid(appId);
-		// ServiceResult<Boolean> saveaua = appUserService.saveOrUpdate(aua);
 
-		// PushRequest pushre = new PushRequest();
-		//
-		// Msg msg = new Msg();
-		// if (saveaua.getData().booleanValue()) {
-		//
-		// baseResponse.setErrMsg("unFollowApp success");
-		// baseResponse.setRet(BaseResponse.RET_SUCCESS);
-		// resp.setBaseResponse(baseResponse);
-		// return resp;
-
-		// ServiceResult<ApplicationAO> application =
-		// applicationService.getById(appId);
-		// if (application != null) {
-		// msg.msgType = 104;
-		// msg.content = "非常感谢你对" + application.getData().getName()
-		// + "的关注，欢迎下次继续使用";
-		// msg.toUserName = excittoken.getData().getUid()
-		// + SUFFIX.USER_SUFFIX;
-		// msg.setObjectContent("appId:" + appId + " ,content:非常感谢你对"
-		// + application.getData().getName() + "的关注，欢迎下次继续使用");
-		//
-		// String Token = application.getData().getToken();
-		// BaseRequest baseRequest = new BaseRequest();
-		// baseRequest.token = Token;
-		// pushre.setBaseRequest(baseRequest);
-		//
-		// pushre.msg = msg;
-		// try {
-		// InputStream in = new BufferedInputStream(
-		// new FileInputStream("src/main/resources/env.properties"));
-		// Properties p = new Properties();
-		// p.load(in);
-		// String push = p.getProperty("push");
-		// String addr = "http://" + push+ "/app/client/app/user/push";
-		// Map mp = new LinkedHashMap();
-		// mp.put("baseRequest", "{token:" + Token + "}");
-		// mp.put("Msg", msg);
-		// byte[] respond = HttpUtil.doPost(addr, mp);
-		// if (respond == null) {
-		//
-		// return null;
-		//
-		// }
-		// ObjectMapper obj = new ObjectMapper();
-		// ServiceResult<LinkedHashMap> r = null;
-		// try {
-		// r = obj.readValue(respond, 0, respond.length,
-		// ServiceResult.class);
-		// if (!r.isSucceed()) {
-		// return null;
-		//
-		// }
-		// baseResponse.setErrMsg("Save app user success");
-		// baseResponse.setRet(BaseResponse.RET_SUCCESS);
-		// resp.setBaseResponse(baseResponse);
-		// return resp;
-		// } catch (IOException e) {
-		// e.printStackTrace();
-		// }
-		// } catch (Exception e) {
-		// // TODO: handle exception
-		// }
-		//
-		// return pushre;
-		// }
-		// } else {
-		// return null;
-		// }
 	}
-
+	
 	@RequestMapping(value = "/getUserAvatar", method = { RequestMethod.GET })
 	public void getUserAvatar(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
@@ -2531,7 +2333,6 @@ public class DeviceController {
 		String height = request.getParameter("height");
 		if (userName.contains(SUFFIX.USER_SUFFIX)) {
 			ServiceResult<UserAO> u = userService.getById(userName.substring(0, userName.indexOf("@")));
-			String nickName =u.getData().getNickName();
 			try {
 				if (!u.getData().getAvatar().isEmpty()) {
 					LOG.info(" 头像名称为空  ",u.getData().getAvatar());
@@ -2596,18 +2397,13 @@ public class DeviceController {
 	@RequestMapping(value = "/setUserAvatar", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object setUserAvatar(@RequestBody SetUserAvatarRequest req, Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
+		
 		Response resp = new Response();
 		BaseResponse baseResponse = new BaseResponse();
-
-		String customerId = req.getBaseRequest().getCustomer_id();
-		String deviceId = req.getBaseRequest().getDeviceID();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
-		if (!excittoken.isSucceed() || null == excittoken.getData()) {
+		if (excittoken==null||null == excittoken.getData()|| !excittoken.isSucceed()) {
 			baseResponse.setErrMsg("会话超时请重新登陆");
 			baseResponse.setRet(BaseResponse.RET_ERROR_TOKEN);
 			resp.setBaseResponse(baseResponse);
@@ -2638,9 +2434,6 @@ public class DeviceController {
 		 LOG.info("SessionId %s", request.getSession().getId());
 		Response resp = new Response();
 		BaseResponse baseResponse = new BaseResponse();
-
-		String token = req.getBaseRequest().getToken();
-
 		ClientLogAO clientLogAo=new ClientLogAO();
 		clientLogAo.setDeviceName(req.getDeviceName());
 		clientLogAo.setOsVersion(req.getOsVersion());
@@ -2701,10 +2494,7 @@ public class DeviceController {
 	@RequestMapping(value = "/setUserInfo", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object setUserInfo(Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
-		Model model1 = model;
+	
 		Map m = model.asMap();
 		return model;
 	}
@@ -2757,83 +2547,68 @@ public class DeviceController {
 				String urlGet5=req.getUrlGet5();
 				
 				String objId_1 = req.getObjId();
-				
+				String objIdKey ="WZTK_"+objId_1;
+				String allAssociationObjects = "";
+				String totalResult="";
+				String result1="";
+				String result_2="";
+				String result_3="";
 				String resultGet1="";
 				String resultGet2="";
 				String resultGet3="";
 				String resultGet4="";
 				String resultGet5="";
 				String objidList="";
-				 LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
-				if (!"00000000==".equals(redisUtilService.get(WZTK_puer_offline_data))) {
-				
-				String result1=HttpClientUtil.httpPost(urlPost, ReserverJsonUtil.getJsonObject1(objId_1), 10000, 10000);
+				if (!redisUtilService.exists(objIdKey)) {
+					 LOG.info(objIdKey+ " 缓存key不存在，从服务器中获取数据:");
+				 result1=HttpClientUtil.httpPost(urlPost, ReserverJsonUtil.getJsonObject1(objId_1), 10000, 10000);
 				
 				Map< String, String> map1 = new HashMap<>();
 				map1=ReserverJsonUtil.readJsonGetResult(result1);
 				String result=map1.get("Result");
 				String realData1=map1.get("RealData");
-				String allAssociationObjects = "";
+				totalResult=result;
+				
 				allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
-		/*		allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
-				if ("0".equals(result)) {
-					redisUtilService.set(WZTK_puer_offline_data1, realData1);
-					if (redisUtilService.exists(objId_1)) {
-						
-						objidList=redisUtilService.get(objId_1);
-						 LOG.info("objidList = :"+ objidList.length());
-					}else {
-						 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
-						 LOG.info("objidList = :"+ objidList.length());
-						 if (!objidList.isEmpty()) {
-							 redisUtilService.set(objId_1, objidList);
-							 redisUtilService.expire(objId_1, 88864);
-						}
-						
-					}
-					
-				}*/
-				 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
-				 LOG.info("result2==objidList = :"+ objidList.length());
-				String result2 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getPropertiesByObjIds(objidList), 10000, 10000);
+				objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
+				
+				 String result2 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getPropertiesByObjIds(objidList), 10000, 10000);
 				Map< String, String> map2 = new HashMap<>();
 				map2=ReserverJsonUtil.readJsonGetResult(result2);
-				String result_2=map2.get("Result");
+				 result_2=map2.get("Result");
 				String realData2=map2.get("RealData");
+				totalResult=totalResult+result_2;
 				
 				
 				String reuslt3 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getObjRelativeFiles(objidList), 10000, 10000);	
 				Map< String, String> map3 = new HashMap<>();
 				map3=ReserverJsonUtil.readJsonGetResult(reuslt3);
-				String result_3=map3.get("Result");
+				 result_3=map3.get("Result");
 				String realData3=map3.get("RealData");
+				totalResult=totalResult+result_3;
 				
-			
-				 resultGet1=HttpClientUtil.sendGet(urlGet1);
+				
+				resultGet1=HttpClientUtil.sendGet(urlGet1);
 				 resultGet2=HttpClientUtil.sendGet(urlGet2);
 				 resultGet3=HttpClientUtil.sendGet(urlGet3);
 				 resultGet4=HttpClientUtil.sendGet(urlGet4);
 				 resultGet5=HttpClientUtil.sendGet(urlGet5);
 				
 				if (resultGet1.contains("ObjId")) {
-					redisUtilService.set(WZTK_puer_offline_data4, resultGet1);
-					result=result+"0";
+					
+					totalResult=totalResult+"0";
 				}
 				if (resultGet2.contains("ObjId")) {
-					redisUtilService.set(WZTK_puer_offline_data5, resultGet2);
-					result=result+"0";
+					totalResult=totalResult+"0";
 				}
 				if (resultGet3.contains("ObjId")) {
-					redisUtilService.set(WZTK_puer_offline_data6, resultGet3);
-					result=result+"0";
+					totalResult=totalResult+"0";
 				}
 				if (resultGet4.contains("ObjId")) {
-					redisUtilService.set(WZTK_puer_offline_data7, resultGet4);
-					result=result+"0";
+					totalResult=totalResult+"0";
 				}
 				if (resultGet5.contains("ObjId")) {
-					redisUtilService.set(WZTK_puer_offline_data8, resultGet5);
-					result=result+"0";
+					totalResult=totalResult+"0";
 				}
 				
 				resp.getAllAssociationObjectsResult1=allAssociationObjects;
@@ -2845,10 +2620,30 @@ public class DeviceController {
 				resp.getReult7=resultGet4;
 				resp.getReult8=resultGet5;
 				
-				if ("00000000".equalsIgnoreCase(result_2+result_3+result)) {
+				if ("00000000".equalsIgnoreCase(totalResult)) {
 					redisUtilService.set(WZTK_puer_offline_data, "00000000");
+					
+					if (!redisUtilService.exists(objIdKey)) {
+						redisUtilService.lpush(objIdKey, allAssociationObjects);
+						redisUtilService.lpush(objIdKey, realData2);	
+						redisUtilService.lpush(objIdKey, realData3);
+					}
+					
+					
+					if (!redisUtilService.exists(WZTK_puer_offline_get_data)) {
+						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet1);
+						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet2);
+						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet3);
+						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet4);
+						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet5);
+					}
+					
+					
+					
 					LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
-					redisUtilService.expire(WZTK_puer_offline_data, 88864);
+					redisUtilService.expire(WZTK_puer_offline_data, 259100);
+					redisUtilService.expire(objIdKey, 259200);
+					redisUtilService.expire(WZTK_puer_offline_get_data, 259200);
 					baseResponse.setRet(BaseResponse.RET_SUCCESS);
 					resp.setBaseResponse(baseResponse);
 					return resp;
@@ -2863,41 +2658,19 @@ public class DeviceController {
 				
 				
 				}else {
-					String realData1=redisUtilService.get(WZTK_puer_offline_data1);
-					String allAssociationObjects = "";
-					allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
-				/*	if (redisUtilService.exists(objId_1)) {
-						 LOG.info("1111 = :"+ objidList.length());
-						objidList=redisUtilService.get(objId_1);
-						 LOG.info("2222 = :"+ objidList.length());
-					}else {
-						 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
-						 LOG.info("3333 = :"+ objidList.length());
-						 if (!objidList.isEmpty()) {
-							 redisUtilService.set(objId_1, objidList);
-							 redisUtilService.expire(objId_1, 88864);
-						}
-						
-					}*/
-					 objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
-					 LOG.info("objidList size= :"+ objidList.length());
-					String result2 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getPropertiesByObjIds(objidList), 30000, 30000);
-					Map< String, String> map2 = new HashMap<>();
-					map2=ReserverJsonUtil.readJsonGetResult(result2);
-					String result_2=map2.get("Result");
-					String realData2=map2.get("RealData");
+				 LOG.info(objIdKey+ " key存在，从redis缓存中获取数据:");
+					List<String> objIdKeyPostList = redisUtilService.lrange(objIdKey, 0, 2);
+					allAssociationObjects =objIdKeyPostList.get(2);
+					String realData2 = objIdKeyPostList.get(1);
+					String realData3 = objIdKeyPostList.get(0);
 					
 					
-					String reuslt3 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getObjRelativeFiles(objidList), 30000, 30000);	
-					Map< String, String> map3 = new HashMap<>();
-					map3=ReserverJsonUtil.readJsonGetResult(reuslt3);
-					String result_3=map3.get("Result");
-					String realData3=map3.get("RealData");
-					resultGet1=redisUtilService.get(WZTK_puer_offline_data4);
-					resultGet2=redisUtilService.get(WZTK_puer_offline_data5);
-					resultGet3=redisUtilService.get(WZTK_puer_offline_data6);
-					resultGet4=redisUtilService.get(WZTK_puer_offline_data7);
-					resultGet5=redisUtilService.get(WZTK_puer_offline_data8);
+					List<String> objIdKeyGetList = redisUtilService.lrange(WZTK_puer_offline_get_data, 0, 4);
+					resultGet1=objIdKeyGetList.get(4);
+					resultGet2=objIdKeyGetList.get(3);
+					resultGet3=objIdKeyGetList.get(2);
+					resultGet4=objIdKeyGetList.get(1);
+					resultGet5=objIdKeyGetList.get(0);
 					
 						resp.getAllAssociationObjectsResult1=allAssociationObjects;
 						resp.getPropertiesByObjIdsResult2=realData2;
@@ -2908,12 +2681,13 @@ public class DeviceController {
 						resp.getReult7=resultGet4;
 						resp.getReult8=resultGet5;
 						
-						if ("00".equalsIgnoreCase(result_2+result_3)) {
+						if (objIdKeyGetList.size()==5&&objIdKeyPostList.size()==3) {
+							//
 							baseResponse.setRet(BaseResponse.RET_SUCCESS);
 							resp.setBaseResponse(baseResponse);
 							return resp;
 						}else {
-							redisUtilService.set(WZTK_puer_offline_data, result_2+result_3);
+							redisUtilService.set(WZTK_puer_offline_data, objIdKeyGetList.size()+objIdKeyPostList.size()+"");
 							LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
 							baseResponse.setErrMsg("数据写入失败");
 							baseResponse.setRet(BaseResponse.RET_ERROR);

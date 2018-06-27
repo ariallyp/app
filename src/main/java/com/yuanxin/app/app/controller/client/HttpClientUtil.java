@@ -13,7 +13,10 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 public class HttpClientUtil {
-	    
+	/**
+	 * Java调用第三方接口方法，post和get方法
+	 * 
+	 */    
 	  public static String httpPost(String httpUrl, String data, int connectTimeout, int readTimeout) throws IOException
 	    {
 	        OutputStream outPut = null;
