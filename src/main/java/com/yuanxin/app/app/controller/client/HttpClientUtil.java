@@ -56,7 +56,7 @@ public class HttpClientUtil {
 	            {
 	                strBuf.append(line);
 	            }
-	            System.out.println(strBuf.toString());
+	           // System.out.println(strBuf.toString());
 	           
 	            return strBuf.toString();
 	        }
@@ -100,7 +100,7 @@ public class HttpClientUtil {
 	        return result;
 	    }
 	  
-	  public static String sendGet(String url) {
+	  public static String sendGet(String url,int connectTimeout,int readTimeout) {
 	        String result = "";
 	        BufferedReader in = null;
 	        try {
@@ -113,6 +113,8 @@ public class HttpClientUtil {
 	            connection.setRequestProperty("connection", "Keep-Alive");
 	            connection.setRequestProperty("user-agent",
 	                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+	            connection.setConnectTimeout(connectTimeout);
+	            connection.setReadTimeout(readTimeout);
 	            // 建立实际的连接
 	            connection.connect();
 	            // 获取所有响应头字段
@@ -155,8 +157,12 @@ public class HttpClientUtil {
 		String urlGet4="http://puer.wizplant.online:8087/CsgiiSBTZOfflineDataService.ashx?userToken=1&methodName=yxqxjl&siteContext=XMH";
 		String urlGet5="http://puer.wizplant.online:8087/CsgiiSBTZOfflineDataService.ashx?userToken=1&methodName=ztpj&siteContext=XMH";
 		
+		int i=urlGet1.lastIndexOf("=");
+		String bdz=urlGet1.substring(i+1);
+		System.err.println(bdz);
+		
 		//String result =httpClientUtil.call(urlGet1);
-		System.err.println(httpClientUtil.sendGet(urlGet1));
+		//System.err.println(httpClientUtil.sendGet(urlGet1,10000));
 	}
 	  
 	  

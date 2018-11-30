@@ -21,6 +21,13 @@
     <result column="os_version" property="osVersion" jdbcType="VARCHAR" />
     <result column="app_version" property="appVersion" jdbcType="VARCHAR" />
     <result column="fid" property="fid" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="vendor" property="vendor" jdbcType="VARCHAR" />
+    <result column="model" property="model" jdbcType="VARCHAR" />
+    <result column="deviceId" property="deviceId" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="fid" property="fid" jdbcType="VARCHAR" />
+    <result column="event_path" property="eventPath" jdbcType="TIMESTAMP" />
     <result column="created" property="created" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Criteria_Where_Clause" >
@@ -155,10 +162,10 @@
     </selectKey>
     insert into client_log (id, uid, uname, 
       device_name, os_version, app_version, 
-      fid, created)
+      fid,type,vendor,model,deviceId, event_path,ip,time,created)
     values (#{id,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR}, #{uname,jdbcType=VARCHAR}, 
       #{deviceName,jdbcType=VARCHAR}, #{osVersion,jdbcType=VARCHAR}, #{appVersion,jdbcType=VARCHAR}, 
-      #{fid,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP})
+      #{fid,jdbcType=VARCHAR},#{type,jdbcType=VARCHAR},#{vendor,jdbcType=VARCHAR},#{model,jdbcType=VARCHAR},#{deviceId,jdbcType=VARCHAR},#{eventPath,jdbcType=VARCHAR},#{ip,jdbcType=VARCHAR},#{time,jdbcType=TIMESTAMP}, #{created,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yuanxin.app.app.appobject.ClientLogAO" >
     <!--
@@ -189,6 +196,28 @@
       <if test="fid != null" >
         fid,
       </if>
+       <if test="type != null" >
+        type,
+      </if>
+       <if test="vendor != null" >
+        vendor,
+      </if>
+       <if test="model != null" >
+        model,
+      </if>
+      
+      <if test="deviceId != null" >
+        deviceId,
+      </if>
+       <if test="time != null" >
+        time,
+      </if> 
+      <if test="event_path != null" >
+        event_path,
+      </if>
+       <if test="ip != null" >
+        ip,
+      </if>
       <if test="created != null" >
         created,
       </if>
@@ -216,6 +245,29 @@
       <if test="created != null" >
         #{created,jdbcType=TIMESTAMP},
       </if>
+       <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+       <if test="vendor != null" >
+        #{vendor,jdbcType=VARCHAR},
+      </if>
+       <if test="model != null" >
+        #{model,jdbcType=VARCHAR},
+      </if>
+       <if test="deviceId != null" >
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+        <if test="time != null" >
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+        <if test="eventPath != null" >
+        #{eventPath,jdbcType=VARCHAR},
+      </if>
+        <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      
+      
     </trim>
   </insert>
   <select id="countByCriteria" parameterType="com.yuanxin.app.app.entity.gen.ClientLogCriteria" resultType="java.lang.Integer" >
@@ -255,6 +307,18 @@
       </if>
       <if test="record.fid != null" >
         fid = #{record.fid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=VARCHAR},
+      </if>
+      <if test="record.vendor != null" >
+        vendor = #{record.vendor,jdbcType=VARCHAR},
+      </if>
+      <if test="record.model != null" >
+        model = #{record.model,jdbcType=VARCHAR},
+      </if>
+      <if test="record.deviceId != null" >
+        deviceId = #{record.deviceId,jdbcType=VARCHAR},
       </if>
       <if test="record.created != null" >
         created = #{record.created,jdbcType=TIMESTAMP},

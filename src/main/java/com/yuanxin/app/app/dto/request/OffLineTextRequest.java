@@ -4,6 +4,7 @@ package com.yuanxin.app.app.dto.request;
 
 public class OffLineTextRequest  extends Request{
 
+	String orgId;
 	String objId ;
 	String urlPost ;
 	String urlGet1 ;
@@ -54,6 +55,12 @@ public class OffLineTextRequest  extends Request{
 	}
 	public void setUrlGet5(String urlGet5) {
 		this.urlGet5 = urlGet5;
+	}
+	public String getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(String orgId) {
+		this.orgId = orgId;
 	}
 	
 	

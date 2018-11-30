@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.yuanxin.app.app.appobject.AssociationObjects;
+import com.yuanxin.app.app.appobject.ClientLogAO;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -42,6 +43,17 @@ public class ReserverJsonUtil {
 		
         
     }
+	
+	public static List<ClientLogAO> getListClientDat(String clientDatas){
+		
+        List<ClientLogAO> tt = com.alibaba.fastjson.JSONObject.parseArray(clientDatas, ClientLogAO.class);
+        
+		
+		
+		return tt;
+		
+	}
+	
 	
 	public static String  readJsonGetAssIDFromData(String realData,String objId){  
 		JSONArray jsonArr = JSONArray.fromObject(realData);  

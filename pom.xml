@@ -82,6 +82,12 @@
 			<version>0.0.1</version>
 			<groupId>net.weedfs.client</groupId>
 		</dependency>
+		<!-- 依赖easc -->
+		<dependency>
+			<groupId>top.wiz.common</groupId>
+			<artifactId>easc-util</artifactId>
+			<version>3.0.2</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.googlecode.rapid-framework</groupId>
@@ -136,23 +142,23 @@
 			<artifactId>tomcat-juli</artifactId>
 			<version>7.0.50</version>
 		</dependency>
-<dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20180130</version>
-</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180130</version>
+		</dependency>
 
-<dependency>    
-    <groupId>net.sf.json-lib</groupId>    
-    <artifactId>json-lib</artifactId>    
-    <version>2.4</version>    
-    <classifier>jdk15</classifier>    
-</dependency> 
-<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.3.1</version>
-</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
+		</dependency>
 
 
 		<!-- java readis客户端 -->
@@ -161,6 +167,28 @@
 			<artifactId>jedis</artifactId>
 			<version>2.6.2</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.mangofactory</groupId>
+			<artifactId>swagger-springmvc</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -501,18 +529,10 @@
 			<version>1.9.6</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.1.0</version>
-		</dependency>
 
 
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.1.0</version>
-		</dependency>
+
+
 
 	</dependencies>
 

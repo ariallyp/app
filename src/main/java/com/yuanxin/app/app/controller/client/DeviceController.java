@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfig;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 import com.yuanxin.app.app.appobject.ApnsTokenAO;
 import com.yuanxin.app.app.appobject.AppUserAO;
 import com.yuanxin.app.app.appobject.AppUserAllowAO;
@@ -71,6 +74,7 @@ import com.yuanxin.app.app.dto.request.GetMemberRequest;
 import com.yuanxin.app.app.dto.request.GetOrgInfoRequest;
 import com.yuanxin.app.app.dto.request.GetOrgUserListRequest;
 import com.yuanxin.app.app.dto.request.LoginRequest;
+import com.yuanxin.app.app.dto.request.MobilDataRequest;
 import com.yuanxin.app.app.dto.request.MultiBindRequest;
 import com.yuanxin.app.app.dto.request.OffLineTextRequest;
 import com.yuanxin.app.app.dto.request.SaveAppUserAllowRequest;
@@ -97,6 +101,7 @@ import com.yuanxin.app.app.dto.response.Response;
 import com.yuanxin.app.app.dto.response.ResponseUpload;
 import com.yuanxin.app.app.dto.response.SearchResponse;
 import com.yuanxin.app.app.dto.response.WizConfigRespons;
+import com.yuanxin.app.app.entity.EascParam;
 import com.yuanxin.app.app.entity.gen.AppUserAllowCriteria;
 import com.yuanxin.app.app.entity.gen.AppUserCriteria;
 import com.yuanxin.app.app.entity.gen.ApplicationCriteria;
@@ -149,12 +154,15 @@ import net.weedfs.client.ReplicationStrategy;
 import net.weedfs.client.WeedFSClient;
 import net.weedfs.client.WeedFSClientBuilder;
 import net.weedfs.client.net.WriteResult;
+import top.wiz.common.easc.EascAuthHelper;
+import top.wiz.common.easc.model.dto.Result;
 
 
 /**
  * Device控制器。
  * 
  */
+@Api(value="client/device")  
 @Controller
 @RequestMapping(value = "/client/device")
 public class DeviceController {
@@ -260,10 +268,37 @@ public class DeviceController {
 	}
 	
 
+	/**
+	 * 登陆接口
+	 * 
+	 * @param model
+	 * @param request
+	 * @return
+	 */
 	
+	@RequestMapping(value = "/loginEasc/{userId}", method = { RequestMethod.GET })
+	@ResponseBody	
+    @ApiOperation(value="根据UId访问easc获取token",httpMethod="GET",notes="get easc by uid",response=Result.class)  
+
+	public Object loginEasc(@PathVariable("userId") String userId, HttpServletRequest request) {
+
+		Result result = new Result();
+		Boolean conn=redisUtilService.exists("WZTK_easc_eascParam_map");
+		if (conn == null || conn == false) {
+			result.setRetcode(1000);
+			result.setRetmsg("redis 获取easc 参数为空 ");
+			return result;
+		}
+		List<String> rsmap =redisUtilService.hmget("WZTK_easc_eascParam_map","appId","domain","port","userName","pwd","tenantId","userId");
+		EascParam eascParam = new EascParam(rsmap.get(0), rsmap.get(1), rsmap.get(2), rsmap.get(3), rsmap.get(4), rsmap.get(5),rsmap.get(6));
+		String domain=eascParam.getDomain();
+		String appId=eascParam.getAppId();
+		String port=eascParam.getPort();
+		result =EascAuthHelper.ssoLoginByUserId(domain, port, userId, appId);
+		
+		return result;
 	
-	
-	
+	}
 	/**
 	 * 获取组织下面的用户
 	 * 
@@ -587,6 +622,10 @@ public class DeviceController {
 
 	}
 	
+	
+	
+	
+	
 
 	/**
 	 * 登陆接口
@@ -653,13 +692,13 @@ public class DeviceController {
 			
 			if (deviceId != null && !deviceId.equals("null") && u.getTenantId().equals(needbind_tenantId)) {
 				int retint = CheckClientDeviceBind(deviceId, u.getUid(), deviceName);
-				if (retint == 2) {
+				if (retint == 2|| retint == 0) {
 					baseResponse.setErrMsg("该设备需要进行绑定才能登录使用");
 					baseResponse.setRet(BaseResponse.RET_ERROR_UNBIND);
 					resp.setBaseResponse(baseResponse);
 					return resp;
 
-				} else if (retint == 1 || retint == 0) {
+				} else if (retint == 1 ) {
 					
 					member = userToMember(u);
 					member.setOrgName(orgName);
@@ -688,8 +727,8 @@ public class DeviceController {
 				redisUtilService.set(username,deviceId);
 				LOG.info("deviceId is ："+ deviceId);
 				String urlHost = loginAndOutUrl+u.getUid()+"/login";
-				LOG.info("urlHost is ："+ urlHost);
 				if ("true".equals(loginAndOutUrlOpen)) {
+				LOG.info("urlHost is ："+ urlHost);
 				String aa=	call(urlHost, "GET");
 				LOG.info("调用登录登出接口返回值================ ："+ aa);
 				}
@@ -1136,7 +1175,7 @@ public class DeviceController {
 		// select 1 from user_user where from_user_id=? and to_user_id=?
 		UserUserCriteria example = new UserUserCriteria();
 		example.createCriteria().andFromUserIdEqualTo(fromUid).andToUserIdEqualTo(toUId);
-		;
+		
 		// example.createCriteria().andToUserIdEqualTo(toUId);
 		ServiceResult<List<UserUserAO>> uus = userUserService.selectByCriteria(example);
 		if (uus.getData().size() == 0) {
@@ -1157,9 +1196,7 @@ public class DeviceController {
 	@RequestMapping(value = "/getMember", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object getMember(@RequestBody GetMemberRequest req, Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
+		
 
 		GetMemberResponse resp = new GetMemberResponse();
 		BaseResponse baseResponse = new BaseResponse();
@@ -1327,9 +1364,7 @@ public class DeviceController {
 	@RequestMapping(value = "/getOrgInfo", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object getOrgInfo(@RequestBody GetOrgInfoRequest req, Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
+		
 		GetOrgInfoResponse resp = new GetOrgInfoResponse();
 		BaseResponse baseResponse = new BaseResponse();
 
@@ -1487,9 +1522,7 @@ public class DeviceController {
 	@RequestMapping(value = "/getOrgUserList", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object getOrgUserList(@RequestBody GetOrgUserListRequest req, Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
+		
 
 		GetOrgUserListResponse resp = new GetOrgUserListResponse();
 		BaseResponse baseResponse = new BaseResponse();
@@ -1542,14 +1575,11 @@ public class DeviceController {
 	@RequestMapping(value = "/checkUpdate", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object checkUpdate(@RequestBody CheckUpdateRequest req, Model model, HttpServletRequest request) {
-		// LOG.info("有访问来自，IP: %s USER-AGENT: %s", request.getRemoteAddr(),
-		// request.getHeader("user-agent"));
-		// LOG.info("SessionId %s", request.getSession().getId());
+		
 
 		CheckUpdateResponse resp = new CheckUpdateResponse();
 		BaseResponse baseResponse = new BaseResponse();
 
-		String customerId = req.getBaseRequest().getCustomer_id();
 		String token = req.getBaseRequest().getToken();
 		ServiceResult<Member> excittoken = getUserByToken(token);
 
@@ -1657,13 +1687,15 @@ public class DeviceController {
 			resp.setBaseResponse(baseResponse);
 			return resp;
 		}
-		String content = retao.getVerDescription();
-		if (appuserallow.getType().equals("1")) {
-			retao.setDownloadUrl(rejectInternatUrl);
-		} else if (appuserallow.getType().equals("2")) {
-			retao.setLanUrl(rejectLanUrl);
-		}
-
+		String content ="";
+		if (null!=retao) {
+			 content = retao.getVerDescription();
+			if (appuserallow.getType().equals("1")) {
+				retao.setDownloadUrl(rejectInternatUrl);
+			} else if (appuserallow.getType().equals("2")) {
+				retao.setLanUrl(rejectLanUrl);
+			}
+		
 		Msg msg = new Msg();
 		msg.msgType = 1001;
 		msg.setContent(content);
@@ -1677,9 +1709,13 @@ public class DeviceController {
 			resp.isUpdate = false;
 
 		}
+		
+		}
 		baseResponse.setErrMsg("");
 		baseResponse.setRet(BaseResponse.RET_SUCCESS);
 		resp.setBaseResponse(baseResponse);
+		
+		
 		return resp;
 	}
 
@@ -1719,6 +1755,10 @@ public class DeviceController {
 		switch (searchType) {
 		case "user":
 			members = searchUser(searchKey, tenantId, pageCount, pageNo);
+			break;
+		case "uid":
+			members = searchUserByid(searchKey, tenantId, pageCount, pageNo);	
+			break;
 		case "app":
 			break;
 		}
@@ -1813,6 +1853,25 @@ public class DeviceController {
 		return memberList;
 	}
 
+	public List<Member> searchUserByid(String uid, String tenantId, int pageCount, int pageNo) {
+		List<Member> memberList = new ArrayList<Member>();
+		Page page = new Page();
+		page.setPageCount(pageCount);
+		page.setPageNo(pageNo);
+
+		UserCriteria userCriteria = new UserCriteria();
+		userCriteria.createCriteria().andUidEqualTo(uid).andTenantIdEqualTo(tenantId);
+		userCriteria.setPage(page);
+
+		ServiceResult<List<UserAO>> userListRet = userService.selectByCriteria(userCriteria);
+		if (userListRet.isSucceed() && !CollectionUtils.isEmpty(userListRet.getData())) {
+			for (UserAO u : userListRet.getData()) {
+				memberList.add(userToMember(u));
+			}
+		}
+		return memberList;
+	}
+	
 	@RequestMapping(value = "/addApnsToken", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object addApnsToken(@RequestBody AddApnsTokenRequest req, Model model, HttpServletRequest request) {
@@ -2456,6 +2515,36 @@ public class DeviceController {
 		}
 	}
 
+	@RequestMapping(value = "/SaveClientData", method = { RequestMethod.POST })
+	@ResponseBody
+	public Object SaveClientData(@RequestBody MobilDataRequest req, Model model, HttpServletRequest request) {
+		LOG.info("调用用户分析系统，上传数据到数据库");
+		 LOG.info("SessionId %s", request.getSession().getId());
+		Response resp = new Response();
+		BaseResponse baseResponse = new BaseResponse();
+		String clientData=req.getClientData();
+		LOG.info("clientData====", clientData);
+		ServiceResult<Boolean> result=null;
+		 List<ClientLogAO> clientList = com.alibaba.fastjson.JSONObject.parseArray(clientData, ClientLogAO.class);
+		 for (Iterator iterator = clientList.iterator(); iterator.hasNext();) {
+			ClientLogAO clientLogAO = (ClientLogAO) iterator.next();
+			clientLogAO.setCreated(new Date());
+			result=clientLogService.saveOrUpdate(clientLogAO);
+		}
+		 		
+		if (result.isSucceed()) {
+			baseResponse.setRet(BaseResponse.RET_SUCCESS);
+			resp.setBaseResponse(baseResponse);
+			return resp;
+		} else {
+			baseResponse.setErrMsg("数据写入失败");
+			baseResponse.setRet(BaseResponse.RET_ERROR);
+			resp.setBaseResponse(baseResponse);
+			return resp;
+		}
+	}
+	
+	
 	/**
 	 * 修改头像
 	 * 
@@ -2531,7 +2620,15 @@ public class DeviceController {
         }
         return result;
     }
-	
+	/**离线统一接口
+	 * 
+	 * 
+	 * @param req
+	 * @param model
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/getOfflineText", method = { RequestMethod.POST })
 	@ResponseBody
 	public Object getOfflineText(@RequestBody OffLineTextRequest req, Model model, HttpServletRequest request) throws Exception {
@@ -2545,10 +2642,16 @@ public class DeviceController {
 				String urlGet3=req.getUrlGet3();
 				String urlGet4=req.getUrlGet4();
 				String urlGet5=req.getUrlGet5();
+				int i=urlGet1.lastIndexOf("=");
+				String bdz=urlGet1.substring(i+1);
+				String objIdGetKey ="wiztalk_"+bdz;
 				
+				String  orgId =req.getOrgId();
+				String orgidKey="wiztalk_org_"+orgId;
 				String objId_1 = req.getObjId();
-				String objIdKey ="WZTK_"+objId_1;
-				String allAssociationObjects = "";
+				String objIdKey ="wiztalk_"+objId_1;
+				String orgIdResult = "";
+				
 				String totalResult="";
 				String result1="";
 				String result_2="";
@@ -2559,120 +2662,130 @@ public class DeviceController {
 				String resultGet4="";
 				String resultGet5="";
 				String objidList="";
-				if (!redisUtilService.exists(objIdKey)) {
-					 LOG.info(objIdKey+ " 缓存key不存在，从服务器中获取数据:");
-				 result1=HttpClientUtil.httpPost(urlPost, ReserverJsonUtil.getJsonObject1(objId_1), 10000, 10000);
-				
-				Map< String, String> map1 = new HashMap<>();
-				map1=ReserverJsonUtil.readJsonGetResult(result1);
-				String result=map1.get("Result");
-				String realData1=map1.get("RealData");
-				totalResult=result;
-				
-				allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
-				objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
-				
-				 String result2 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getPropertiesByObjIds(objidList), 10000, 10000);
-				Map< String, String> map2 = new HashMap<>();
-				map2=ReserverJsonUtil.readJsonGetResult(result2);
-				 result_2=map2.get("Result");
-				String realData2=map2.get("RealData");
-				totalResult=totalResult+result_2;
-				
-				
-				String reuslt3 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getObjRelativeFiles(objidList), 10000, 10000);	
-				Map< String, String> map3 = new HashMap<>();
-				map3=ReserverJsonUtil.readJsonGetResult(reuslt3);
-				 result_3=map3.get("Result");
-				String realData3=map3.get("RealData");
-				totalResult=totalResult+result_3;
-				
-				
-				resultGet1=HttpClientUtil.sendGet(urlGet1);
-				 resultGet2=HttpClientUtil.sendGet(urlGet2);
-				 resultGet3=HttpClientUtil.sendGet(urlGet3);
-				 resultGet4=HttpClientUtil.sendGet(urlGet4);
-				 resultGet5=HttpClientUtil.sendGet(urlGet5);
-				
-				if (resultGet1.contains("ObjId")) {
-					
-					totalResult=totalResult+"0";
-				}
-				if (resultGet2.contains("ObjId")) {
-					totalResult=totalResult+"0";
-				}
-				if (resultGet3.contains("ObjId")) {
-					totalResult=totalResult+"0";
-				}
-				if (resultGet4.contains("ObjId")) {
-					totalResult=totalResult+"0";
-				}
-				if (resultGet5.contains("ObjId")) {
-					totalResult=totalResult+"0";
-				}
-				
-				resp.getAllAssociationObjectsResult1=allAssociationObjects;
-				resp.getPropertiesByObjIdsResult2=realData2;
-				resp.getObjRelativeFilesResult3=realData3;
-			 	resp.getReult4=resultGet1;
-				resp.getReult5=resultGet2;
-				resp.getReult6=resultGet3;
-				resp.getReult7=resultGet4;
-				resp.getReult8=resultGet5;
-				
-				if ("00000000".equalsIgnoreCase(totalResult)) {
-					redisUtilService.set(WZTK_puer_offline_data, "00000000");
-					
-					if (!redisUtilService.exists(objIdKey)) {
-						redisUtilService.lpush(objIdKey, allAssociationObjects);
-						redisUtilService.lpush(objIdKey, realData2);	
-						redisUtilService.lpush(objIdKey, realData3);
-					}
-					
-					
-					if (!redisUtilService.exists(WZTK_puer_offline_get_data)) {
-						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet1);
-						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet2);
-						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet3);
-						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet4);
-						redisUtilService.lpush(WZTK_puer_offline_get_data, resultGet5);
-					}
-					
-					
-					
-					LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
-					redisUtilService.expire(WZTK_puer_offline_data, 259100);
-					redisUtilService.expire(objIdKey, 259200);
-					redisUtilService.expire(WZTK_puer_offline_get_data, 259200);
-					baseResponse.setRet(BaseResponse.RET_SUCCESS);
-					resp.setBaseResponse(baseResponse);
-					return resp;
-				}else {
-					redisUtilService.set(WZTK_puer_offline_data, result_2+result_3+result);
-					LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
-					baseResponse.setErrMsg("数据写入失败");
-					baseResponse.setRet(BaseResponse.RET_ERROR);
-					resp.setBaseResponse(baseResponse);
-					return resp;
-				}
-				
-				
-				}else {
-				 LOG.info(objIdKey+ " key存在，从redis缓存中获取数据:");
-					List<String> objIdKeyPostList = redisUtilService.lrange(objIdKey, 0, 2);
-					allAssociationObjects =objIdKeyPostList.get(2);
-					String realData2 = objIdKeyPostList.get(1);
-					String realData3 = objIdKeyPostList.get(0);
-					
-					
-					List<String> objIdKeyGetList = redisUtilService.lrange(WZTK_puer_offline_get_data, 0, 4);
-					resultGet1=objIdKeyGetList.get(4);
-					resultGet2=objIdKeyGetList.get(3);
-					resultGet3=objIdKeyGetList.get(2);
-					resultGet4=objIdKeyGetList.get(1);
-					resultGet5=objIdKeyGetList.get(0);
-					
-						resp.getAllAssociationObjectsResult1=allAssociationObjects;
+				String realData1="";
+				if (redisUtilService.exists(objIdKey)&&redisUtilService.exists(objIdGetKey)&&redisUtilService.exists(orgidKey)) {
+					 LOG.info(objIdKey+ " key存在，从redis缓存中获取数据:");
+					 orgIdResult=redisUtilService.get(orgidKey);
+					 
+					 List<String> objIdKeyPostList = redisUtilService.lrange(objIdKey, 0, 2);
+						realData1 =objIdKeyPostList.get(2);
+						// System.err.println("==========="+realData1.length());
+						String realData2 = objIdKeyPostList.get(1);
+						String realData3 = objIdKeyPostList.get(0);
+						
+						
+						List<String> objIdKeyGetList = redisUtilService.lrange(objIdGetKey, 0, 4);
+						resultGet1=objIdKeyGetList.get(4);
+						resultGet2=objIdKeyGetList.get(3);
+						resultGet3=objIdKeyGetList.get(2);
+						resultGet4=objIdKeyGetList.get(1);
+						resultGet5=objIdKeyGetList.get(0);
+						
+							resp.getAllAssociationObjectsResult1=orgIdResult;
+							resp.getPropertiesByObjIdsResult2=realData2;
+							resp.getObjRelativeFilesResult3=realData3;
+						 	resp.getReult4=resultGet1;
+							resp.getReult5=resultGet2;
+							resp.getReult6=resultGet3;
+							resp.getReult7=resultGet4;
+							resp.getReult8=resultGet5;
+							
+							if (objIdKeyGetList.size()==5&&objIdKeyPostList.size()==3) {
+								//
+								baseResponse.setRet(BaseResponse.RET_SUCCESS);
+								resp.setBaseResponse(baseResponse);
+								return resp;
+							}else {
+								redisUtilService.set(WZTK_puer_offline_data, objIdKeyGetList.size()+objIdKeyPostList.size()+"");
+								LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
+								baseResponse.setErrMsg("数据写入失败");
+								baseResponse.setRet(BaseResponse.RET_ERROR);
+								resp.setBaseResponse(baseResponse);
+								return resp;
+							}
+							
+					}else {
+						LOG.info(objIdKey+ " 缓存key不存在，調用第三方接口从服务器中获取数据:");
+						
+						String realData2 = "";
+						String realData3="";
+						
+						if (!redisUtilService.exists(orgidKey)) {
+							String data=HttpClientUtil.httpPost(urlPost, ReserverJsonUtil.getJsonObject1(orgId), 10000, 50000);
+							Map< String, String> mapOrgid = new HashMap<>();
+							mapOrgid=ReserverJsonUtil.readJsonGetResult(data);
+							String result=mapOrgid.get("Result");
+							 orgIdResult=mapOrgid.get("RealData");
+							 totalResult=result;
+							 LOG.info("接口orgid调用结果 totalResult= :"+ totalResult);
+						}else {
+							orgIdResult=redisUtilService.get(orgidKey);
+							totalResult="0";
+						}
+						
+						
+						if (!redisUtilService.exists(objIdKey)) {
+						
+						result1=HttpClientUtil.httpPost(urlPost, ReserverJsonUtil.getJsonObject1(objId_1), 10000, 50000);
+						Map< String, String> map1 = new HashMap<>();
+						map1=ReserverJsonUtil.readJsonGetResult(result1);
+						String result=map1.get("Result");
+						 realData1=map1.get("RealData");
+						// System.err.println("==========="+realData1.length());
+						totalResult=totalResult+result;
+						LOG.info("接口1===调用结果 totalResult= :"+ totalResult);
+						//allAssociationObjects = NodeUtilForObjids.getAllAssociationObjects(realData1, objId_1);
+						objidList=NodeUtilForObjids.getProIds(realData1, objId_1);
+						if (objidList.length()>20) {
+						String result2 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getPropertiesByObjIds(objidList), 10000, 50000);
+						Map< String, String> map2 = new HashMap<>();
+						map2=ReserverJsonUtil.readJsonGetResult(result2);
+						 result_2=map2.get("Result");
+						 realData2=map2.get("RealData");
+						totalResult=totalResult+result_2;
+						LOG.info("接口2===调用结果 totalResult= :"+ totalResult);
+						String reuslt3 = HttpClientUtil.httpPost(urlPost, GetJosonUtil.getObjRelativeFiles(objidList), 10000, 50000);	
+						Map< String, String> map3 = new HashMap<>();
+						map3=ReserverJsonUtil.readJsonGetResult(reuslt3);
+						result_3=map3.get("Result");
+						 realData3=map3.get("RealData");
+						totalResult=totalResult+result_3;
+						}else {
+							totalResult="";
+						}
+						
+						LOG.info("接口3===调用结果 totalResult= :"+ totalResult);
+						}else {
+							LOG.info(objIdKey+"   post緩衝存在，調用緩存 :");
+							List<String> objIdKeyPostList = redisUtilService.lrange(objIdKey, 0, 2);
+							realData1 =objIdKeyPostList.get(2);
+							realData2 = objIdKeyPostList.get(1);
+							realData3 = objIdKeyPostList.get(0);
+							totalResult="000"+totalResult;
+						}
+						
+						if (!redisUtilService.exists(objIdGetKey)) {
+							resultGet1=HttpClientUtil.sendGet(urlGet1,20000,50000);
+							resultGet2=HttpClientUtil.sendGet(urlGet2,20000,50000);
+							resultGet3=HttpClientUtil.sendGet(urlGet3,10000,50000);
+							resultGet4=HttpClientUtil.sendGet(urlGet4,10000,50000);
+							resultGet5=HttpClientUtil.sendGet(urlGet5,10000,50000);
+							if (!resultGet1.isEmpty()&&!resultGet1.isEmpty()&&!resultGet1.isEmpty()&&!resultGet1.isEmpty()&&!resultGet1.isEmpty()&&!resultGet1.isEmpty()) {
+								totalResult=totalResult+"00000";
+							}
+						}else {
+							
+							LOG.info(objIdGetKey+"   get緩衝存在，調用緩存 :");
+							List<String> objIdKeyGetList = redisUtilService.lrange(objIdGetKey, 0, 4);
+							resultGet1=objIdKeyGetList.get(4);
+							resultGet2=objIdKeyGetList.get(3);
+							resultGet3=objIdKeyGetList.get(2);
+							resultGet4=objIdKeyGetList.get(1);
+							resultGet5=objIdKeyGetList.get(0);
+							totalResult=totalResult+"00000";
+						}
+						
+						resp.getAllAssociationObjectsResult1=orgIdResult;
 						resp.getPropertiesByObjIdsResult2=realData2;
 						resp.getObjRelativeFilesResult3=realData3;
 					 	resp.getReult4=resultGet1;
@@ -2680,14 +2793,35 @@ public class DeviceController {
 						resp.getReult6=resultGet3;
 						resp.getReult7=resultGet4;
 						resp.getReult8=resultGet5;
-						
-						if (objIdKeyGetList.size()==5&&objIdKeyPostList.size()==3) {
-							//
+						LOG.info("接口调用结果 totalResult= :"+ totalResult);
+						if ("000000000".equalsIgnoreCase(totalResult)) {
+							if (!redisUtilService.exists(orgidKey)) {
+								redisUtilService.set(orgidKey, orgIdResult);
+							}
+							
+							if (!redisUtilService.exists(objIdKey)) {
+								redisUtilService.lpush(objIdKey, realData1);
+								redisUtilService.lpush(objIdKey, realData2);	
+								redisUtilService.lpush(objIdKey, realData3);
+							}
+							
+							//如果key不存在數據，戝存到redis中
+							if (!redisUtilService.exists(objIdGetKey)) {
+								redisUtilService.lpush(objIdGetKey, resultGet1);
+								redisUtilService.lpush(objIdGetKey, resultGet2);
+								redisUtilService.lpush(objIdGetKey, resultGet3);
+								redisUtilService.lpush(objIdGetKey, resultGet4);
+								redisUtilService.lpush(objIdGetKey, resultGet5);
+							}
+							//設置自動消亡時間，這個時間以後可以以後在後臺自動配置。
+							redisUtilService.expire(WZTK_puer_offline_data, 259100);
+							redisUtilService.expire(orgidKey, 259200);
+							redisUtilService.expire(objIdKey, 259200);
+							redisUtilService.expire(objIdGetKey, 259200);
 							baseResponse.setRet(BaseResponse.RET_SUCCESS);
 							resp.setBaseResponse(baseResponse);
 							return resp;
 						}else {
-							redisUtilService.set(WZTK_puer_offline_data, objIdKeyGetList.size()+objIdKeyPostList.size()+"");
 							LOG.info("WZTK_puer_offline_data = :"+ redisUtilService.get(WZTK_puer_offline_data));
 							baseResponse.setErrMsg("数据写入失败");
 							baseResponse.setRet(BaseResponse.RET_ERROR);
@@ -2695,15 +2829,34 @@ public class DeviceController {
 							return resp;
 						}
 						
-				}
-				
-	
-				
+						
+						}
 				
 	}
 	
-	
-	
+
+	@RequestMapping(value = "/getApplication/{appId}", method = { RequestMethod.GET })
+	@ResponseBody
+	public Object getApplication(@PathVariable("appId") String appId,HttpServletRequest request) {
+		GetApplicationListResponse resp = new GetApplicationListResponse();
+		BaseResponse baseResponse = new BaseResponse();
+		List<Member> members = new ArrayList<Member>();
+
+		ApplicationCriteria applicationCriteria = new ApplicationCriteria();
+		applicationCriteria.createCriteria().andStatusEqualTo(0).andIdEqualTo(appId);
+		ServiceResult<List<ApplicationAO>> appListRet = applicationService.selectByCriteria(applicationCriteria);
+		if (appListRet.isSucceed() && !CollectionUtils.isEmpty(appListRet.getData())) {
+			for (ApplicationAO app : appListRet.getData()) {
+				app.setFollow("0");
+				members.add(appToMember(app));
+			}
+		}
+		resp.memberList = members;
+		resp.memberCount = members.size();
+		baseResponse.setRet(BaseResponse.RET_SUCCESS);
+		resp.setBaseResponse(baseResponse);
+		return resp;
+	}
 	
 	
 }

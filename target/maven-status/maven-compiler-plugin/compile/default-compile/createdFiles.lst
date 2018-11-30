@@ -33,6 +33,7 @@ com\yuanxin\app\app\dto\response\GetOrgInfoResponse.class
 com\yuanxin\app\app\entity\gen\QunUser.class
 com\yuanxin\app\app\wsdl\wcf\GetUserDynamic.class
 com\yuanxin\app\app\service\ClientLogService.class
+com\yuanxin\app\app\controller\client\NodeUtil.class
 com\yuanxin\app\app\dto\response\ChangeUserInfoResponse.class
 com\yuanxin\app\app\entity\gen\ExternalInterfaceCriteria.class
 com\yuanxin\app\app\wsdl\service\SyncDbService.class
@@ -43,6 +44,7 @@ com\yuanxin\app\app\dto\request\ChangeSkinRequest.class
 com\yuanxin\app\app\entity\gen\OrgUserCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\entity\gen\Customer.class
 com\yuanxin\app\app\entity\gen\ApplicationCriteria.class
+com\yuanxin\app\app\controller\client\ReserverJsonUtil.class
 com\yuanxin\app\app\entity\gen\AppUserCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\dto\request\UpdateQunTopicRequest.class
 com\yuanxin\app\app\entity\gen\ApnsTokenCriteria$Criteria.class
@@ -50,6 +52,7 @@ com\yuanxin\app\app\entity\gen\OrgCriteria$Criterion.class
 com\yuanxin\app\app\util\SerializeUtilRedis.class
 com\yuanxin\app\app\service\IWizConfigService.class
 com\yuanxin\app\app\entity\gen\UserCriteria$GeneratedCriteria.class
+com\yuanxin\app\app\dto\response\UploadImagesRespons.class
 com\yuanxin\app\app\entity\gen\ClientCustomizedCriteria$Criteria.class
 com\yuanxin\app\app\wsdl\util\StringUtil.class
 com\yuanxin\app\app\dto\response\SetUserAvatarResponse.class
@@ -86,6 +89,7 @@ com\yuanxin\app\app\entity\gen\User.class
 com\yuanxin\app\app\dto\response\UpdateQunTopicResponse.class
 com\yuanxin\app\app\wsdl\entity\SeUser.class
 com\yuanxin\app\app\entity\gen\UserUser.class
+com\yuanxin\app\app\controller\client\HttpRequestTool.class
 com\yuanxin\app\app\dto\model\ObjectContentApp102$AppInfo.class
 com\yuanxin\app\app\entity\gen\ClientLogCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\OrgUserCriteria$Criterion.class
@@ -94,6 +98,7 @@ com\yuanxin\app\app\entity\gen\AppUserCriteria$Criterion.class
 com\yuanxin\app\app\dto\response\GetQunMembersResponse.class
 com\yuanxin\app\app\entity\gen\OperationCriteria.class
 com\yuanxin\app\app\entity\gen\CustomerCriteria$GeneratedCriteria.class
+com\yuanxin\app\app\controller\client\GetJosonUtil.class
 com\yuanxin\app\app\job\SynOrgAndUserTask.class
 com\yuanxin\app\app\entity\gen\AppUserCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\QunUserCriteria.class
@@ -109,9 +114,12 @@ com\yuanxin\app\app\service\IOpenfireUserSerivce.class
 com\yuanxin\app\app\service\IOrgUserService.class
 com\yuanxin\app\app\dto\response\CheckUpdateResponse.class
 com\yuanxin\app\app\dto\model\ObjectContentVoice.class
+com\yuanxin\app\app\controller\client\TreeEntity.class
 com\yuanxin\app\app\dto\response\CreateQunResponse.class
 com\yuanxin\app\app\appobject\TenantAO.class
+com\yuanxin\app\app\dto\request\OffLineTextRequest.class
 com\yuanxin\app\app\appobject\OperationAO.class
+com\yuanxin\app\app\controller\client\NodeUtilForObjids.class
 com\yuanxin\app\app\dto\request\SearchRequest.class
 com\yuanxin\app\app\entity\gen\ClientLog.class
 com\yuanxin\app\app\wsdl\wcf\AppRequest.class
@@ -194,6 +202,7 @@ com\yuanxin\app\app\dao\gen\UserUserGeneratedMapper.class
 com\yuanxin\app\app\appobject\QunAO.class
 com\yuanxin\app\app\appobject\ObjectClientAO.class
 com\yuanxin\app\app\entity\gen\Operation.class
+com\yuanxin\app\app\controller\client\JsonHttpClient.class
 com\yuanxin\app\app\entity\gen\FileLinkCriteria.class
 com\yuanxin\app\app\dao\gen\ClientLogGeneratedMapper.class
 com\yuanxin\app\app\appobject\WizConfigAO.class
@@ -205,6 +214,7 @@ com\yuanxin\app\app\entity\gen\Resource.class
 com\yuanxin\app\app\dto\request\GetAppOperationListRequest.class
 com\yuanxin\app\app\dto\request\GetOrgInfoRequest.class
 com\yuanxin\app\app\entity\gen\Skin.class
+com\yuanxin\app\app\controller\client\Read.class
 com\yuanxin\app\app\dto\model\ObjectContentApp102$Head.class
 com\yuanxin\app\app\service\IExternalInterfaceService.class
 com\yuanxin\app\app\entity\gen\ClientCriteria$Criteria.class
@@ -276,12 +286,14 @@ com\yuanxin\app\app\entity\gen\WiztalkconfigCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\ApnsTokenCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\entity\gen\OrgCriteria.class
 com\yuanxin\app\app\entity\gen\QunUserCriteria$Criteria.class
+com\yuanxin\app\app\controller\client\Node.class
 com\yuanxin\app\app\dto\model\ObjectContentImage.class
 com\yuanxin\app\app\dto\request\PushRequest.class
 com\yuanxin\app\app\entity\gen\ObjectClient.class
 com\yuanxin\app\app\dao\gen\OrgUserGeneratedMapper.class
 com\yuanxin\app\app\common\MVCViewMatch.class
 com\yuanxin\app\app\wsdl\wcf\GetAuditLogsResponse.class
+com\yuanxin\app\app\controller\client\HttpClientUtil.class
 com\yuanxin\app\app\entity\gen\AppTenantCriteria$Criteria.class
 com\yuanxin\app\app\service\ITenantService.class
 com\yuanxin\app\app\dto\response\AddQunMemberResponse.class
@@ -290,6 +302,7 @@ com\yuanxin\app\app\entity\gen\SkinCriteria$Criteria.class
 com\yuanxin\app\app\dao\gen\QunGeneratedMapper.class
 com\yuanxin\app\app\entity\gen\Qun.class
 com\yuanxin\app\app\appobject\OrgAO.class
+com\yuanxin\app\app\dto\response\OfflineResponse.class
 com\yuanxin\app\app\appobject\ApnsTokenAO.class
 com\yuanxin\app\app\dao\gen\ApplicationGeneratedMapper.class
 com\yuanxin\app\app\dto\request\BaseRequest.class
@@ -314,6 +327,7 @@ com\yuanxin\app\app\service\IOrgService.class
 com\yuanxin\app\app\wsdl\util\FontImageUtil.class
 com\yuanxin\app\app\dto\model\QunInfo.class
 com\yuanxin\app\app\service\IAppUserService.class
+com\yuanxin\app\app\appobject\AssociationObjects.class
 com\yuanxin\app\app\entity\gen\ClientLogCriteria.class
 com\yuanxin\app\app\entity\gen\CustomerCriteria.class
 com\yuanxin\app\app\service\TenantService.class
@@ -334,6 +348,7 @@ com\yuanxin\app\app\entity\gen\SkinCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\service\RedisDataSource.class
 com\yuanxin\app\app\service\RedisService$2.class
 com\yuanxin\app\app\dto\request\SaveAppUserAllowRequest.class
+com\yuanxin\app\app\util\ResizeImage.class
 com\yuanxin\app\app\dao\gen\OrgGeneratedMapper.class
 com\yuanxin\app\app\service\AppUserService.class
 com\yuanxin\app\app\controller\client\DeviceController.class
@@ -352,6 +367,7 @@ com\yuanxin\app\app\appobject\UserAO.class
 com\yuanxin\app\app\service\UserService.class
 com\yuanxin\app\app\service\RedisService$3.class
 com\yuanxin\app\app\dto\request\ClientLogRequest.class
+com\yuanxin\app\app\entity\gen\FileLinkImages.class
 com\yuanxin\app\app\entity\gen\Client.class
 com\yuanxin\app\app\dto\model\ObjectContentApp102.class
 com\yuanxin\app\app\appobject\QunUserAO.class
@@ -360,6 +376,7 @@ com\yuanxin\app\app\dto\request\GetMemberRequest.class
 com\yuanxin\app\app\job\SynUser.class
 com\yuanxin\app\app\dto\response\GetSkinListResponse.class
 com\yuanxin\app\app\service\ClientPluginVersionService.class
+com\yuanxin\app\app\dto\request\MobilDataRequest.class
 com\yuanxin\app\app\entity\gen\ExternalInterfaceCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\dto\model\ObjectContent.class
 com\yuanxin\app\app\dto\model\ObjectContentApp103.class

@@ -26,6 +26,12 @@
 	<context:annotation-config />
 
 	<mvc:annotation-driven />
+	<!-- 将 springSwaggerConfig加载到spring容器 -->
+	<bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" />
+	<!-- 将自定义的swagger配置类加载到spring容器 -->
+	<bean class="com.yuanxin.app.app.common.SwaggerConfig" />
+
+
 
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -86,15 +92,16 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<!-- 配置SpringMVC的视图解析器 -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="prefix" value="/WEB-INF/jsp/"/>
-		<property name="suffix" value=".jsp"/>
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
 	</bean>
 
-	<mvc:default-servlet-handler/>
-	
+	<mvc:default-servlet-handler />
+
 	<!-- freemarker 视图解析器配置 -->
 	<bean id="freemarkerConfig"
 		class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
