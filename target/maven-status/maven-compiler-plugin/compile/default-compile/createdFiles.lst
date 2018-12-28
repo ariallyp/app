@@ -33,9 +33,9 @@ com\yuanxin\app\app\dto\response\GetOrgInfoResponse.class
 com\yuanxin\app\app\entity\gen\QunUser.class
 com\yuanxin\app\app\wsdl\wcf\GetUserDynamic.class
 com\yuanxin\app\app\service\ClientLogService.class
+com\yuanxin\app\app\controller\client\NodeUtil.class
 com\yuanxin\app\app\dto\response\ChangeUserInfoResponse.class
 com\yuanxin\app\app\entity\gen\ExternalInterfaceCriteria.class
-com\yuanxin\app\app\wsdl\service\SyncDbService.class
 com\yuanxin\app\app\dto\response\AddOrRemoveContactResponse.class
 com\yuanxin\app\app\dto\response\UnFllowAppResponse.class
 com\yuanxin\app\app\entity\gen\FileLinkCriteria$GeneratedCriteria.class
@@ -43,6 +43,7 @@ com\yuanxin\app\app\dto\request\ChangeSkinRequest.class
 com\yuanxin\app\app\entity\gen\OrgUserCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\entity\gen\Customer.class
 com\yuanxin\app\app\entity\gen\ApplicationCriteria.class
+com\yuanxin\app\app\controller\client\ReserverJsonUtil.class
 com\yuanxin\app\app\entity\gen\AppUserCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\dto\request\UpdateQunTopicRequest.class
 com\yuanxin\app\app\entity\gen\ApnsTokenCriteria$Criteria.class
@@ -58,6 +59,7 @@ com\yuanxin\app\app\appobject\AppUserAO.class
 com\yuanxin\app\app\entity\gen\CustomerCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\ClientVersionCriteria.class
 com\yuanxin\app\app\util\RedisClinet.class
+com\yuanxin\app\app\controller\client\EascParam.class
 com\yuanxin\app\app\service\UserUserService.class
 com\yuanxin\app\app\service\IOperationService.class
 com\yuanxin\app\app\appobject\AppUserAllowAO.class
@@ -86,6 +88,8 @@ com\yuanxin\app\app\entity\gen\User.class
 com\yuanxin\app\app\dto\response\UpdateQunTopicResponse.class
 com\yuanxin\app\app\wsdl\entity\SeUser.class
 com\yuanxin\app\app\entity\gen\UserUser.class
+com\yuanxin\app\app\controller\client\SysConfig.class
+com\yuanxin\app\app\controller\client\HttpRequestTool.class
 com\yuanxin\app\app\dto\model\ObjectContentApp102$AppInfo.class
 com\yuanxin\app\app\entity\gen\ClientLogCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\OrgUserCriteria$Criterion.class
@@ -94,6 +98,7 @@ com\yuanxin\app\app\entity\gen\AppUserCriteria$Criterion.class
 com\yuanxin\app\app\dto\response\GetQunMembersResponse.class
 com\yuanxin\app\app\entity\gen\OperationCriteria.class
 com\yuanxin\app\app\entity\gen\CustomerCriteria$GeneratedCriteria.class
+com\yuanxin\app\app\controller\client\GetJosonUtil.class
 com\yuanxin\app\app\job\SynOrgAndUserTask.class
 com\yuanxin\app\app\entity\gen\AppUserCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\QunUserCriteria.class
@@ -109,9 +114,12 @@ com\yuanxin\app\app\service\IOpenfireUserSerivce.class
 com\yuanxin\app\app\service\IOrgUserService.class
 com\yuanxin\app\app\dto\response\CheckUpdateResponse.class
 com\yuanxin\app\app\dto\model\ObjectContentVoice.class
+com\yuanxin\app\app\controller\client\TreeEntity.class
 com\yuanxin\app\app\dto\response\CreateQunResponse.class
 com\yuanxin\app\app\appobject\TenantAO.class
+com\yuanxin\app\app\dto\request\OffLineTextRequest.class
 com\yuanxin\app\app\appobject\OperationAO.class
+com\yuanxin\app\app\controller\client\NodeUtilForObjids.class
 com\yuanxin\app\app\dto\request\SearchRequest.class
 com\yuanxin\app\app\entity\gen\ClientLog.class
 com\yuanxin\app\app\wsdl\wcf\AppRequest.class
@@ -122,6 +130,7 @@ com\yuanxin\app\app\service\IClientLogService.class
 com\yuanxin\app\app\entity\gen\FileLinkCriteria$Criterion.class
 com\yuanxin\app\app\entity\gen\TenantCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\ClientVersionCriteria$GeneratedCriteria.class
+com\yuanxin\app\app\appobject\AssProperties.class
 com\yuanxin\app\app\entity\gen\AppTenantCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\entity\gen\ApnsToken.class
 com\yuanxin\app\app\service\IUserUserService.class
@@ -137,7 +146,6 @@ com\yuanxin\app\app\entity\gen\WiztalkconfigCriteria.class
 com\yuanxin\app\app\wsdl\wcf\WriteLog.class
 com\yuanxin\app\app\entity\gen\ClientPluginVersionCriteria.class
 com\yuanxin\app\app\entity\gen\AppUserAllowCriteria.class
-com\yuanxin\app\app\wsdl\util\TestRedis.class
 com\yuanxin\app\app\entity\gen\SkinCriteria.class
 com\yuanxin\app\app\dto\model\ObjectContentApp101$Data.class
 com\yuanxin\app\app\dao\gen\CustomerGeneratedMapper.class
@@ -194,6 +202,7 @@ com\yuanxin\app\app\dao\gen\UserUserGeneratedMapper.class
 com\yuanxin\app\app\appobject\QunAO.class
 com\yuanxin\app\app\appobject\ObjectClientAO.class
 com\yuanxin\app\app\entity\gen\Operation.class
+com\yuanxin\app\app\controller\client\JsonHttpClient.class
 com\yuanxin\app\app\entity\gen\FileLinkCriteria.class
 com\yuanxin\app\app\dao\gen\ClientLogGeneratedMapper.class
 com\yuanxin\app\app\appobject\WizConfigAO.class
@@ -205,6 +214,7 @@ com\yuanxin\app\app\entity\gen\Resource.class
 com\yuanxin\app\app\dto\request\GetAppOperationListRequest.class
 com\yuanxin\app\app\dto\request\GetOrgInfoRequest.class
 com\yuanxin\app\app\entity\gen\Skin.class
+com\yuanxin\app\app\controller\client\Read.class
 com\yuanxin\app\app\dto\model\ObjectContentApp102$Head.class
 com\yuanxin\app\app\service\IExternalInterfaceService.class
 com\yuanxin\app\app\entity\gen\ClientCriteria$Criteria.class
@@ -244,7 +254,6 @@ com\yuanxin\app\app\entity\gen\OrgUser.class
 com\yuanxin\app\app\entity\gen\TenantCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\entity\gen\ResourceCriteria.class
 com\yuanxin\app\app\entity\gen\SkinCriteria$Criterion.class
-com\yuanxin\app\app\wsdl\util\WeedFsClientUpload.class
 com\yuanxin\app\app\entity\gen\ClientLogCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\entity\gen\ApplicationCriteria$Criterion.class
 com\yuanxin\app\app\wsdl\wcf\AuditLogRequest.class
@@ -263,7 +272,6 @@ com\yuanxin\app\app\entity\gen\AppUserAllowCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\UserCriteria$Criterion.class
 com\yuanxin\app\app\service\RedisService$1.class
 com\yuanxin\app\app\wsdl\entity\SeOrganization.class
-com\yuanxin\app\app\wsdl\util\WCFUtil.class
 com\yuanxin\app\app\dto\request\ChangeUserInfoRequest.class
 com\yuanxin\app\app\dto\request\Request.class
 com\yuanxin\app\app\dto\request\AddApnsTokenRequest.class
@@ -271,17 +279,20 @@ com\yuanxin\app\app\dto\model\Member.class
 com\yuanxin\app\app\dto\request\UnFollowAppRequest.class
 com\yuanxin\app\app\dto\request\AddOrRemoveContactRequest.class
 com\yuanxin\app\app\entity\gen\AppUserCriteria.class
+com\yuanxin\app\app\controller\client\EascUser.class
 com\yuanxin\app\app\dto\model\ObjectContentApp104.class
 com\yuanxin\app\app\entity\gen\WiztalkconfigCriteria$Criteria.class
 com\yuanxin\app\app\entity\gen\ApnsTokenCriteria$GeneratedCriteria.class
 com\yuanxin\app\app\entity\gen\OrgCriteria.class
 com\yuanxin\app\app\entity\gen\QunUserCriteria$Criteria.class
+com\yuanxin\app\app\controller\client\Node.class
 com\yuanxin\app\app\dto\model\ObjectContentImage.class
 com\yuanxin\app\app\dto\request\PushRequest.class
 com\yuanxin\app\app\entity\gen\ObjectClient.class
 com\yuanxin\app\app\dao\gen\OrgUserGeneratedMapper.class
 com\yuanxin\app\app\common\MVCViewMatch.class
 com\yuanxin\app\app\wsdl\wcf\GetAuditLogsResponse.class
+com\yuanxin\app\app\controller\client\HttpClientUtil.class
 com\yuanxin\app\app\entity\gen\AppTenantCriteria$Criteria.class
 com\yuanxin\app\app\service\ITenantService.class
 com\yuanxin\app\app\dto\response\AddQunMemberResponse.class
@@ -290,11 +301,11 @@ com\yuanxin\app\app\entity\gen\SkinCriteria$Criteria.class
 com\yuanxin\app\app\dao\gen\QunGeneratedMapper.class
 com\yuanxin\app\app\entity\gen\Qun.class
 com\yuanxin\app\app\appobject\OrgAO.class
+com\yuanxin\app\app\dto\response\OfflineResponse.class
 com\yuanxin\app\app\appobject\ApnsTokenAO.class
 com\yuanxin\app\app\dao\gen\ApplicationGeneratedMapper.class
 com\yuanxin\app\app\dto\request\BaseRequest.class
 com\yuanxin\app\app\dto\response\SetShieldMsgResponse.class
-com\yuanxin\app\app\wsdl\util\WeedFSClientImpl2.class
 com\yuanxin\app\app\appobject\AppTenantAO.class
 com\yuanxin\app\app\service\IClientService.class
 com\yuanxin\app\app\dao\gen\ClientGeneratedMapper.class
@@ -314,6 +325,7 @@ com\yuanxin\app\app\service\IOrgService.class
 com\yuanxin\app\app\wsdl\util\FontImageUtil.class
 com\yuanxin\app\app\dto\model\QunInfo.class
 com\yuanxin\app\app\service\IAppUserService.class
+com\yuanxin\app\app\appobject\AssociationObjects.class
 com\yuanxin\app\app\entity\gen\ClientLogCriteria.class
 com\yuanxin\app\app\entity\gen\CustomerCriteria.class
 com\yuanxin\app\app\service\TenantService.class
@@ -347,6 +359,7 @@ com\yuanxin\app\app\entity\gen\OrgUserCriteria$Criteria.class
 com\yuanxin\app\app\util\RedisClass.class
 com\yuanxin\app\app\dao\gen\ExternalInterfaceGeneratedMapper.class
 com\yuanxin\app\app\service\IApnsTokenService.class
+com\yuanxin\app\app\controller\client\EascGetResultUtil.class
 com\yuanxin\app\app\dao\gen\OperationGeneratedMapper.class
 com\yuanxin\app\app\appobject\UserAO.class
 com\yuanxin\app\app\service\UserService.class

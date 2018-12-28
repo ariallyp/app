@@ -5,44 +5,15 @@
  */
 package com.yuanxin.app.app.controller.pc;
 
-import com.yuanxin.app.app.common.MVCViewName;
-import com.yuanxin.app.app.job.SynOrgAndUserTask;
-import com.yuanxin.app.app.job.SynUser;
-import com.yuanxin.app.app.wsdl.service.SyncDbService;
-import com.yuanxin.framework.logging.Logger;
-import com.yuanxin.framework.logging.LoggerFactory;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-
-
-
-
-
-
-
-
-
-
-import org.quartz.CronExpression;
-import org.quartz.CronTrigger;
-import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
-import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * Hello控制器。
  * 
  */
 @Controller
 @RequestMapping(value = "/pc/sycn")
-public class SycnController {
+public class SycnController {/*
 
     private static Logger LOG = LoggerFactory.getLogger(SycnController.class);
 //    @Resource
@@ -149,4 +120,4 @@ public class SycnController {
 				e.printStackTrace();
 			}
   }
-}
+*/}

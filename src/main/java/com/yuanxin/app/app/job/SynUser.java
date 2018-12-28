@@ -8,8 +8,6 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.yuanxin.app.app.wsdl.service.SyncDbService;
-
 public class SynUser extends QuartzJobBean {
 	
 	@Override
@@ -17,8 +15,8 @@ public class SynUser extends QuartzJobBean {
 			throws JobExecutionException {
 		try {
 			WebApplicationContext context1 = ContextLoader.getCurrentWebApplicationContext();
-			SyncDbService syncDbService = (SyncDbService) context1.getBean("syncDbService");
-			syncDbService.syncdb();
+			/*SyncDbService syncDbService = null;
+			syncDbService.syncdb();*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

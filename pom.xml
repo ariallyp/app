@@ -74,9 +74,14 @@
 			<artifactId>framework</artifactId>
 			<version>${framework.version}</version>
 		</dependency>
-
-
+		<!-- easc -->
+		<dependency>
+			<groupId>top.wiz.common</groupId>
+			<artifactId>easc-util</artifactId>
+			<version>3.0.5</version>
+		</dependency>
 		<!-- 依赖weedfs客户端 -->
+
 		<dependency>
 			<artifactId>WeedFSClient</artifactId>
 			<version>0.0.1</version>
@@ -136,23 +141,23 @@
 			<artifactId>tomcat-juli</artifactId>
 			<version>7.0.50</version>
 		</dependency>
-<dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20180130</version>
-</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180130</version>
+		</dependency>
 
-<dependency>    
-    <groupId>net.sf.json-lib</groupId>    
-    <artifactId>json-lib</artifactId>    
-    <version>2.4</version>    
-    <classifier>jdk15</classifier>    
-</dependency> 
-<dependency>
-    <groupId>com.google.code.gson</groupId>
-    <artifactId>gson</artifactId>
-    <version>2.3.1</version>
-</dependency>
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
+		</dependency>
 
 
 		<!-- java readis客户端 -->
@@ -320,11 +325,8 @@
 			<version>2.6</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.13</version>
-		</dependency>
+		<!-- <dependency> <groupId>org.codehaus.jackson</groupId> <artifactId>jackson-mapper-asl</artifactId> 
+			<version>1.9.13</version> </dependency> -->
 
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -477,11 +479,7 @@
 		</dependency>
 		<!-- log end -->
 		<!-- 映入JSON 都需要加，要不spring会报错 切记 -->
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.9.5</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>

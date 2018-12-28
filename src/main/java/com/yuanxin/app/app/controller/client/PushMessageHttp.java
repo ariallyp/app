@@ -1,11 +1,16 @@
 package com.yuanxin.app.app.controller.client;
 
 import java.io.BufferedReader;  
-import java.io.DataOutputStream;  
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;  
 import java.net.HttpURLConnection;  
 import java.net.URL;  
-import java.net.URLEncoder;  
+import java.net.URLEncoder;
+
+import top.wiz.common.easc.constant.Consts;
+import top.wiz.common.easc.exception.EascException;
+import top.wiz.common.easc.util.RpcHttpUtils;  
   
 public class PushMessageHttp {  
   
@@ -37,6 +42,28 @@ public class PushMessageHttp {
             System.out.println("失败!");  
         }  
     }  
+    
+    
+    public static void httpURLConectionGET(String link,String token) {  
+        try {  
+            URL url = new URL(link);    // 把字符串转换为URL请求地址  
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();// 打开连接  
+            connection.connect();// 连接会话  
+            // 获取输入流  
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));  
+            String line;  
+            StringBuilder sb = new StringBuilder();  
+            while ((line = br.readLine()) != null) {// 循环读取流  
+                sb.append(line);  
+            }  
+            br.close();// 关闭流  
+            connection.disconnect();// 断开连接  
+            System.out.println(sb.toString());  
+        } catch (Exception e) {  
+            e.printStackTrace();  
+            System.out.println("失败!");  
+        }  
+    }
       
     /** 
      * 接口调用  POST 
@@ -113,5 +140,26 @@ public class PushMessageHttp {
     public static void main(String[] args) {  
 //        httpURLConectionGET();  
         //httpURLConnectionPOST();  
-    }  
-}  
+    	
+    	
+    	 String hostAddress = RpcHttpUtils.checkUrl("192.168.1.70", "2002");
+         String url = hostAddress.concat(Consts.LOGIN).concat("d371c4d1-c151-4d49-bcc5-7798875ed4d4").concat("/").concat("xuna").concat("/").concat("25F9E794323B453885F5181F1B624D0B");
+         String response;
+        
+             try {
+				response = RpcHttpUtils.invokeHttp(url, RpcHttpUtils.GET, RpcHttpUtils.REST, null, null);
+				System.err.println(response);
+			} catch (UnsupportedOperationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (EascException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+     
+    } 
+    
+}
